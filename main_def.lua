@@ -60,10 +60,10 @@ local settings = {
 }
 
 local theme = {
-    ["Frame background"] = Color(0, 0, 0, 255),
-    ["Frame foreground"] = Color(0, 0, 0),
-    ["Frame title"] = Color(255, 255, 255),
-}
+    ["Frame background"] = stupasta or Color(7, 7, 7),
+    ["Frame foreground"] = foregra or Color(7, 7, 7),
+    ["Frame title"] = frama or Color(255, 255, 255),
+} 
 
 local pLocalPlayer = LocalPlayer()
 
@@ -76,9 +76,10 @@ local traceStruct = { output = traceResult }
 local flTickInterval = engine.TickInterval()
 
 surface.CreateFont( "DermaSmall", {	
-    font = "Comic Sans MS", 
+    font = "Akbar", 
     antialias = false,
-    size = 15
+    size = 15,
+    outline = true
 } )
 
 
@@ -1085,7 +1086,6 @@ do
 
     end
 end
-
 do
     local PANEL = {}
 
@@ -1154,38 +1154,25 @@ do
     end
 
 function PANEL:Paint(w, h)
+
     surface.SetDrawColor(theme["Frame background"])
     draw.RoundedBox(8, 0, 0, w, h, theme["Frame background"])
     
     -- верхняя панель
-    surface.SetDrawColor(255, 255, 255)
-    surface.DrawRect(0, 0, w, 25)
-
-    local ply = LocalPlayer()
-    if IsValid(ply) then
-        local nick = ply:Nick() or "noyneim"
-        
-        surface.SetFont("Default")
-        local tw, th = surface.GetTextSize(nick)
-
-        surface.SetTextColor(0, 0, 0)
-        surface.SetTextPos(w - tw - 40, 6)
-        surface.DrawText(nick)
-
-        if not IsValid(self.AvatarImage) then
-            self.AvatarImage = vgui.Create("AvatarImage", self)
-            self.AvatarImage:SetSize(20, 20)
-            self.AvatarImage:SetPlayer(ply, 64)
-            self.AvatarImage:SetPos(w - 30, 3)
-        else
-            self.AvatarImage:SetPos(w - 30, 3)
-        end
+    -- крч шоб изменить ебаный градиент меняешь число 188(ЭТО КОРОЧ ТЕМНЫЙ ЦВЕТ 188 ДЛЯ ТУПЫХ)
+    for y = 0, 24 do
+        local t = y / 24 
+        local r = 188 + (255 - 188) * t
+        local g = 188 + (255 - 188) * t
+        local b = 188 + (255 - 188) * t
+        surface.SetDrawColor(math.floor(r), math.floor(g), math.floor(b))
+        surface.DrawRect(0, y, w, 1)
     end
     
-    surface.SetFont("Default")
-    surface.SetTextColor(255, 0, 0)
+    surface.SetFont("BudgetLabel")
+    surface.SetTextColor(206, 0, 0)
     surface.SetTextPos(310, 6) 
-    surface.DrawText("KA3AX HACK BY MORGENSHTERN")
+    surface.DrawText("KA3AXHACK local edition")
 end
 
     function PANEL:GetTopPanel()
@@ -1250,17 +1237,18 @@ do
     end
 
     function PANEL:Paint( w, h )
-        surface.SetDrawColor( ultimate.Colors[54] )
+        surface.SetDrawColor( Color(107, 107, 107) )
         surface.DrawOutlinedRect( 0, 0, w, h, 1 )
+
    
         surface.SetFont( "DermaSmall" )
 
-        surface.SetTextColor( ultimate.Colors[165] )
+        surface.SetTextColor( Color(180, 180, 180) )
         surface.SetTextPos( 8, 2 ) 
         surface.DrawText( self.txt ) 
 
-        surface.SetDrawColor( ultimate.Colors[ 54 ] )
-        surface.DrawRect( 6, 20, w - 12, 1 )
+        surface.SetDrawColor(Color(107, 107, 107))
+        surface.DrawRect( 0, 20, w, 1 )
     end
 
     function PANEL:OnMousePressed()
@@ -1282,7 +1270,7 @@ do
     local PANEL = {}
 
     function PANEL:Paint( w, h )
-        surface.SetDrawColor( ultimate.Colors[ 54 ] )
+        surface.SetDrawColor( Color(107, 107, 107) )
         surface.DrawRect( 0, 0, w, h )
     end
     
@@ -1305,6 +1293,7 @@ do
     vgui.Register( "UCBPanel", PANEL, "DPanel" )
 end
 
+
 do
     local PANEL = {}
 
@@ -1317,7 +1306,7 @@ do
         function self.Button:Paint(w,h)
             local v = self:GetChecked()
 
-            surface.SetDrawColor(ultimate.Colors[54])
+            surface.SetDrawColor(146,146,146)
 
             surface.DrawOutlinedRect(0,0,w,h,1)
 
@@ -2521,31 +2510,30 @@ function ultimate.ui.Label( pan, str, postCreate )
     if postCreate then postCreate( p ) end
 end
     
-function ultimate.ui.CheckBox( par, lbl, cfg, hint, bind, color, spanel, onToggle, postCreate )
-    local p = vgui.Create( "UCBPanel", par )
+function ultimate.ui.CheckBox(par, lbl, cfg, hint, bind, color, spanel, onToggle, postCreate)
+    local p = vgui.Create("UCBPanel", par)
 
-    local c = vgui.Create( "UCheckboxLabel", p )
-    c:SetText( lbl )
-    c:SetPos( 0, 0 )
-    c:SetValue( ultimate.cfg.vars[cfg] )
+    local c = vgui.Create("UCheckboxLabel", p)
+    c:SetText(lbl)
+    c:SetPos(0, 0)
+    c:SetValue(ultimate.cfg.vars[cfg])
+    c:SetTextColor(Color(107, 107, 107))
 
-    function c:OnChange( bval )
+    function c:OnChange(bval)
         ultimate.cfg.vars[cfg] = bval
-
         if onToggle then onToggle(bval) end
     end
 
-    if postCreate then postCreate( p ) end
+    if postCreate then postCreate(p) end
 
-    if bind then ultimate.ui.Binder( cfg, p ) end
-    if color then ultimate.ui.ColorPicker( cfg, p ) end
-    if spanel then ultimate.ui.SPanel( spanel, p ) end
+    if bind then ultimate.ui.Binder(cfg, p) end
+    if color then ultimate.ui.ColorPicker(cfg, p) end
+    if spanel then ultimate.ui.SPanel(spanel, p) end
 
     if hint then
         function c.Label:Paint()
             if self:IsHovered() then
                 local x, y = input.GetCursorPos()
-
                 ultimate.hint = true
                 ultimate.hintText = hint
                 ultimate.hintX = x + 45
@@ -2554,7 +2542,6 @@ function ultimate.ui.CheckBox( par, lbl, cfg, hint, bind, color, spanel, onToggl
         end
     end
 end
-
 function ultimate.ui.Slider( p, str, cfg, min, max, dec, onChange )
     local pan = vgui.Create( "DPanel", p )
     pan:Dock( TOP )
@@ -2980,7 +2967,9 @@ function ultimate.tabs.Aimbot()
     ultimate.ui.ComboBox( p, "Knifebot mode", "Knifebot mode"  )
     ultimate.ui.CheckBox( p, "Facestab", "Facestab" )
 
-    local p = ultimate.itemPanel("Auto health",2,140):GetItemPanel()
+
+
+    local p = ultimate.itemPanel("Auto health",2,100):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Auto healthkit", "Autohealthkit", false, false, false )
     ultimate.ui.CheckBox( p, "Healthkit-Self heal", "Healthkit-Self heal"  )
@@ -2994,6 +2983,10 @@ function ultimate.tabs.Aimbot()
     ultimate.ui.Slider( p, "Max targets", "Max targets", 0, 10, 0 )
     ultimate.ui.Slider( p, "Max distance", "Max distance", 0, 50000, 0 )
     ultimate.ui.CheckBox( p, "Priority List", "Enable Priority List")
+    local p = ultimate.itemPanel( "Crossbow pred", 1, 100 ):GetItemPanel()
+
+    ultimate.ui.CheckBox( p, "Crossbow prediction", "Crossbow prediction", "use without silent aim" )
+    ultimate.ui.Slider( p, "Simulation limit", "Simulation limit", 1, 10, 2 )
 
     local p = ultimate.itemPanel( "Hitbox selection", 3, 280 ):GetItemPanel()
 
@@ -3004,7 +2997,15 @@ function ultimate.tabs.Aimbot()
     ultimate.ui.CheckBox( p, "Multipoint", "Multipoint" ) 
     ultimate.ui.MultiCombo( p, "Multipoint groups", { "Head", "Chest", "Stomach", "Arms", "Legs", "Generic" } )
     ultimate.ui.Slider( p, "Multipoint scale", "Multipoint scale", 0.5, 1, 1 )
+
+    local p = ultimate.itemPanel( "Tickbase", 2, 100 ):GetItemPanel()
+
+    ultimate.ui.CheckBox( p, "LagCompensation", "LagCompensation", "Compensate ping loss" )
+    ultimate.ui.CheckBox( p, "LerpTime abjust", "LerpTime", "abuse lerptime target" )
+    ultimate.ui.CheckBox( p, "Lag fix" , "Lag fix", "idk work or not", false, false, false, ultimate.spfuncs[254] )
 end
+
+
 
 
 
@@ -3037,7 +3038,7 @@ function ultimate.tabs.Rage()
     ultimate.ui.ComboBox( p, "Pitch", "Pitch" )
     ultimate.ui.ComboBox( p, "Edge", "Edge", { "Disabled", "Hide", "Show", "Jitter" } )
 
-    local p = ultimate.itemPanel( "Tweaks", 1, 185 ):GetItemPanel()
+    local p = ultimate.itemPanel( "Tweaks", 1, 155 ):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "On shot aa", "On shot aa" )
     ultimate.ui.CheckBox( p, "Yaw randomisation", "Yaw randomisation" )
@@ -3632,7 +3633,7 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Auto teleport back", "Auto peak tp" )
     ultimate.ui.CheckBox( p, "Water walk", "Water jump" )
 
-    local p = ultimate.itemPanel("Key spam",1,185):GetItemPanel()
+    local p = ultimate.itemPanel("Key spam",1,175):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Use spam", "Use spam" )
     ultimate.ui.CheckBox( p, "Flashlight spam", "Flashlight spam" )
@@ -3683,7 +3684,7 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Keypad Cracker", "Keypad Cracker" )
     ultimate.ui.CheckBox( p, "Crosshair", "Crosshair", false, false, true, false )
     ultimate.ui.ComboBox( p, "Crosshair style", "crossstyle", {"Cross", "Nacist ebanny", "Для тех у кого отношения с мальчиками", "Watniy ebanat","бЛЯТЬ","skeleton","верталет"})
-    ultimate.ui.CheckBox( p, "RusEliteRp weapon detector 3.0", "RusEliteDetector", "Use only on RUSELITERP!!!!" )
+    ultimate.ui.CheckBox( p, "Ruselite detector", "RusEliteDetector", "Use only on RUSELITERP!!!!" )
 
 
    /*
@@ -3897,7 +3898,6 @@ ultimate.ttable["Misc"]     = ultimate.tabs.Misc
 ultimate.ttable["Config"] = ultimate.tabs.Config
 ultimate.ttable["Players"]  = ultimate.tabs.Players
 ultimate.ttable["Entities"]  = ultimate.tabs.Entities
-
 function ultimate.initTab(tab)
     if ultimate.scrollpanel != nil then ultimate.scrollpanel:Remove() end
 
@@ -3909,10 +3909,11 @@ function ultimate.initTab(tab)
 end
 
 function ultimate.tabButton(tab,par) 
-    surface.SetFont("DermaDefaultBold")
+    surface.SetFont("DermaSmall")
     local w, h = surface.GetTextSize(tab)
 
     local fw = w + 35
+
     local tx, ty = fw/2 - w/2, 25/2-h/2 - 1
 
     local b = par:Add("DButton")
@@ -3921,75 +3922,31 @@ function ultimate.tabButton(tab,par)
     b:SetWide(fw)
     b:SetText("")
     
-    b.hoverProgress = 0
-    b.activeProgress = 0
-    b.lastThink = CurTime()
-    
-    function b:Think()
-        local currentTime = CurTime()
-        local frameTime = currentTime - self.lastThink
-        self.lastThink = currentTime
-        
-        local targetHover = self:IsHovered() and 1 or 0
-        self.hoverProgress = Lerp(frameTime * 10, self.hoverProgress, targetHover)
-        
-        local targetActive = (ultimate.activetab == tab) and 1 or 0
-        self.activeProgress = Lerp(frameTime * 8, self.activeProgress, targetActive)
-    end
-
     function b:DoClick()
         ultimate.activetab = tab
         ultimate.initTab(tab)
     end
 
     function b:Paint(width,height)
-        -- йццвета
-        local accent = Color(100, 150, 255)    
-        local background = Color(20, 20, 30)   
-        local textColor = Color(230, 230, 240)  
-        
-        local bgColor = Color(
-            Lerp(self.activeProgress, background.r, accent.r),
-            Lerp(self.activeProgress, background.g, accent.g),
-            Lerp(self.activeProgress, background.b, accent.b),
-            200
-        )
-        
-        draw.RoundedBox(4, 0, 0, width, height, bgColor)
-        
-        if self.hoverProgress > 0 then
-            local hoverColor = Color(
-                accent.r,
-                accent.g,
-                accent.b,
-                50 * self.hoverProgress
-            )
-            draw.RoundedBox(4, 0, 0, width, height, hoverColor)
+        if ultimate.activetab == tab or self:OnDepressed() then
+            surface.SetDrawColor(ultimate.Colors[54])
+            surface.SetTextColor(180,0,0)
+        elseif self:IsHovered() then
+            surface.SetDrawColor(ultimate.Colors[40])
+            surface.SetTextColor(225,225,225,255)
+        else
+            surface.SetDrawColor(ultimate.Colors[30])
+            surface.SetTextColor(200,200,200,255)
         end
         
-        if self.activeProgress > 0 then
-            local barWidth = width * 0.6 * self.activeProgress
-            local barX = (width - barWidth) / 2
-            draw.RoundedBoxEx(2, barX, height-3, barWidth, 3, accent, true, true, false, false)
-        end
-        
-        local finalTextColor = Color(
-            Lerp(self.activeProgress, textColor.r, 255),
-            Lerp(self.activeProgress, textColor.g, 255),
-            Lerp(self.activeProgress, textColor.b, 255),
-            textColor.a
-        )
-        
-        draw.SimpleText(tab, "DermaDefaultBold", tx+1, ty+1, Color(0,0,0,100), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        
-        draw.SimpleText(tab, "DermaDefaultBold", tx, ty, finalTextColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        
-        if self.activeProgress > 0.5 then
-            surface.SetDrawColor(accent.r, accent.g, accent.b, 30 * self.activeProgress)
-            surface.DrawRect(0, 0, width, height)
-        end
+        surface.DrawRect(0,0,width,height)
+
+        surface.SetFont("DermaSmall")
+        surface.SetTextPos(tx,ty)
+        surface.DrawText(tab)
     end
 end
+
 ultimate.tabButton( "Aimbot",        ultimate.frame:GetTopPanel() ) 
 ultimate.tabButton( "Rage",          ultimate.frame:GetTopPanel() ) 
 ultimate.tabButton( "Visuals",       ultimate.frame:GetTopPanel() ) 
@@ -4287,6 +4244,29 @@ end
     Nospread 
 */
 
+if ultimate.cfg.vars["Lag fix"] then
+    if ultimate.cfg.vars["Backshoot"] then
+        local targetTime = ded.GetSimulationTime( ply:EntIndex() )
+        local timeOffset = ded.GetServerTime(cmd) - targetTime
+
+        -- Check if we can backtrack without cl_interp
+        local serverArriveTick = ded.GetServerTime(cmd) + ded.GetLatency(0) + ded.GetLatency(1)
+        local diff = serverArriveTick - ply.aimshots.sw_backshoot_data.simTime
+        if diff < 0.2 then 
+            local tick = ultimate.TIME_TO_TICKS(targetTime + ultimate.GetLerpTime())
+            ded.SetCommandTick(cmd, tick)
+        else
+            ded.SetTargetInterp(ded.GetServerTime(cmd) - targetTime)
+
+            local tick = ultimate.TIME_TO_TICKS(ded.GetServerTime(cmd))
+            ded.SetCommandTick(cmd, tick - 1)
+        end
+    else
+        local simTime = ded.GetSimulationTime(ply:EntIndex())
+        local tick = ultimate.TIME_TO_TICKS(simTime + ultimate.GetLerpTime())
+        ded.SetCommandTick(cmd, tick)
+    end
+end
 
 
 ultimate.CustomSpread = {}
@@ -4485,7 +4465,16 @@ ultimate.SpreadComps["tfa"]     = ultimate.CustomSpread.tfa
 
 
 
+function ultimate.LagCompensation(cmd)
+    local ply = ultimate.SelectTarget(cmd)
+    local ping = ply:Ping()
 
+    local compensationAmount = ping * 0.001 
+
+
+    local serverTime = GetServerTime()
+    local compensatedTime = serverTime - compensationAmount
+end
 
 
 
@@ -5477,13 +5466,13 @@ function ultimate.Aim(cmd)
 
     if not ultimate.cfg.vars["Enable aimbot"] or not ply then return end
 
-    /*local targetTime = ded.GetSimulationTime( ply:EntIndex() )
+    local targetTime = ded.GetSimulationTime( ply:EntIndex() )
     local timeOffset = ded.GetServerTime(cmd) - targetTime
 
     local serverArriveTick = ded.GetServerTime(cmd) + ded.GetLatency(0) + ded.GetLatency(1)
     local diff = serverArriveTick - targetTime
 
-    if diff > 1 and ultimate.cfg.vars["Adjust tickcount"] then return end*/
+    if diff > 1 and ultimate.cfg.vars["Adjust tickcount"] then return end
 
     local oldangs = Angle(aimang)
 
@@ -5533,7 +5522,7 @@ function ultimate.Aim(cmd)
     end
 
     if ultimate.cfg.vars["Force seed"] then
-        //ded.ForceSeed( cmd )
+        ded.ForceSeed( cmd )
     end
 
     if ultimate.cfg.vars["Nospread"] then
@@ -5543,6 +5532,11 @@ function ultimate.Aim(cmd)
     if ultimate.cfg.vars["On shot aa"] then
         finalAngle.p = -finalAngle.p - 180
         finalAngle.y = finalAngle.y + 180
+    end
+
+    if ultimate.cfg.vars["LagCompensation"] and ultimate.target ~= nil then
+        local lagCompensationTime = ded.GetRealTime() 
+        ultimate.target:SetNWFloat("LagCompensation", lagCompensationTime)
     end
 
    if ultimate.cfg.vars["Projectile aimbot"] then
@@ -8746,19 +8740,15 @@ do
                 }
         end
 
-        -- Основной код рендеринга
         if ultimate.cfg.vars["Indicators"] then
-                -- Создаем шрифт один раз
                 if not ultimate.indicators.font_created then
-                        surface.CreateFont("UltraIndicators", {
-                                font = "Tahoma",
-                                size = 13,
-                                weight = 700
+                        surface.CreateFont("bigdick", {
+                                font = "BudgetLabel",
+                                size = 13
                         })
                         ultimate.indicators.font_created = true
                 end
 
-                -- Обновляем данные с интервалом 0.2 секунды
                 local now = RealTime()
                 if now - ultimate.indicators.last_update > 0.001 then
                         local ply = LocalPlayer()
@@ -8776,37 +8766,30 @@ do
                         ultimate.indicators.last_update = now
                 end
 
-                -- Рендер индикаторов
                 local x, y = 38, ScrH() - 220
                 local cache = ultimate.indicators.cache
 
 
-                -- Отрисовка текста
-                surface.SetFont("BudgetLabel")
-                
-                -- KDR
-                surface.SetTextColor(cache.kills > cache.deaths and Color(0,255,100) or Color(255,80,80))
-                surface.SetTextPos(x, y)
+                local white = Color(255,255,255)
+                local reda = Color(255,0,0)
+                surface.SetTextColor(cache.kills > cache.deaths and white or reda)
+                surface.SetTextPos(x, y+5)
                 surface.DrawText(string.format("KDR: %d/%d", cache.kills, cache.deaths))
 
-                -- Velocity
-                surface.SetTextColor(100, 200, 255)
+                surface.SetTextColor(white)
                 surface.SetTextPos(x, y+20)
-                surface.DrawText(string.format("VEL: %du/s", cache.vel))
+                surface.DrawText(string.format("SPEED: %d", cache.vel))
 
-                -- LBY
-                surface.SetTextColor(200, 200, 200)
-                surface.SetTextPos(x, y+40)
+                surface.SetTextColor(white)
+                surface.SetTextPos(x, y+35)
                 surface.DrawText(string.format("LBY: %d°", cache.lby))
 
-                -- Ping
-                surface.SetTextColor(cache.ping > 50 and Color(255,100,100) or Color(150,255,150))
-                surface.SetTextPos(x, y+60)
+                surface.SetTextColor(white)
+                surface.SetTextPos(x, y+50)
                 surface.DrawText(string.format("PING: %dms", cache.ping))
 
-                -- Fake
-                surface.SetTextColor(cache.faking and Color(255,50,50) or Color(100,255,100))
-                surface.SetTextPos(x, y+80)
+                surface.SetTextColor(cache.faking and white or reda)
+                surface.SetTextPos(x, y+65)
                 surface.DrawText(string.format("FAKE: %d", cache.fake_ticks))
         end
         
@@ -11111,7 +11094,7 @@ do
                     ultimate.btrecords[ v ] = {}
                 end
 
-                /*
+                
                 if ultimate.cfg.vars["Extrapolation"] and v.simtime_updated and v != pLocalPlayer then
                     -- Получаем текущую позицию игрока
                     local currentPos = v:GetNetworkOrigin()
@@ -11200,7 +11183,7 @@ do
                     
                     ded.FinishSimulation()
                 end
-                */
+                
 
                 if ultimate.cfg.vars["Extrapolation"] and v.break_lc then
                     local predTime = ded.GetLatency(0) + ded.GetLatency(1)
